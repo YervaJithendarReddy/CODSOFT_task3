@@ -1,0 +1,60 @@
+import tkinter as tk
+from tkinter import messagebox
+
+# Declare edit_button as a global variable
+edit_button = None
+
+def add_task():
+    task = task_entry.get()
+    if task:
+        frame = tk.Frame(tasks_frame, bg="black")
+        frame.pack(fill=tk.X)
+        
+        task_label = tk.Label(frame, text=task, font=("Helvetica", 12), fg="white", bg="black")
+        task_label.pack(side=tk.LEFT, padx=5, pady=5)
+        
+        global edit_button
+        edit_button = tk.Button(frame, text="Edit", command=lambda: edit_task(frame, task), bg="green", fg="white")
+        edit_button.pack(side=tk.RIGHT, padx=5)
+        
+        remove_button = tk.Button(frame, text="Remove", command=lambda: remove_task(frame), bg="red", fg="white")
+        remove_button.pack(side=tk.RIGHT, padx=5)
+        
+        task_entry.delete(0, tk.END)
+    else:
+        messagebox.showwarning("Warning", "Please enter a task.")
+
+def remove_task(frame):
+    frame.destroy()
+
+def edit_task(frame, old_task):
+    task_entry.delete(0, tk.END)
+    task_entry.insert(0, old_task)
+
+    def save_edited_task():
+        new_task = task_entry.get()
+        if new_task:
+            task_label = frame.winfo_children()[0]
+            task_label.config(text=new_task)
+            task_entry.delete(0, tk.END)
+            edit_button.config(command=lambda: edit_task(frame, new_task))
+            save_button.destroy()
+        else:
+            messagebox.showwarning("Warning", "Please enter a new task.")
+
+    save_button = tk.Button(frame, text="Save", command=save_edited_task, bg="blue", fg="white")
+    save_button.pack(side=tk.RIGHT, padx=5)
+
+root = tk.Tk()
+root.title("To-Do List")
+
+task_entry = tk.Entry(root, font=("Helvetica", 14))
+task_entry.pack(pady=10, padx=10, fill=tk.X)
+
+add_button = tk.Button(root, text="Add Task", command=add_task, bg="blue", fg="white")
+add_button.pack(padx=10, fill=tk.X)
+
+tasks_frame = tk.Frame(root, bg="lightgray")
+tasks_frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+
+root.mainloop()
